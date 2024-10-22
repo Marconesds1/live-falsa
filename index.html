@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Falsa Instagram</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        body {
+            margin: 0;
+            font-family: sans-serif;
+            background-color: #fafafa;
+        }
+        .live-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: black;
+            overflow: hidden;
+        }
+        .video-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .comments {
+            background: transparent;
+            color: white;
+            padding: 10px;
+            max-height: 150px;
+            overflow-y: hidden;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+        .comment {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+        .comment img {
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+        }
+        .live-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: red;
+            color: white;
+            padding: 5px 10px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 5px;
+            text-transform: uppercase;
+        }
+        .viewers-count {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            font-size: 14px;
+            font-weight: normal;
+        }
+        .emoji-container {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            pointer-events: none;
+        }
+        .emoji {
+            font-size: 24px;
+            animation: float 3s ease-in-out infinite;
+            opacity: 0;
+        }
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-200px);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="live-container">
+        <div class="video-container">
+            <div class="live-label">AO VIVO</div>
+            <div class="viewers-count">67.000 espectadores</div>
+            <video id="liveVideo" autoplay playsinline></video>
+            <div class="comments" id="comments"></div>
+            <div class="emoji-container" id="emojiContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices
+                .getUserMedia({ video: { facingMode: "user" } })
+                .then(function (stream) {
+                    const liveVideo = document.getElementById('liveVideo');
+                    liveVideo.srcObject = stream;
+                })
+                .catch(function (err) {
+                    console.error("Erro ao acessar a câmera: ", err);
+                });
+        } else {
+            alert("Infelizmente, seu navegador não suporta acesso à câmera.");
+        }
+
+        const commentsElement = document.getElementById('comments');
+        const emojiContainer = document.getElementById('emojiContainer');
+        const fakeComments = [
+            { name: "João", comment: "Wow, que live incrível!", profile: "https://randomuser.me/api/portraits/men/1.jpg" },
+            { name: "Maria", comment: "Adorei esse conteúdo!", profile: "https://randomuser.me/api/portraits/women/1.jpg" },
+            { name: "Lucas", comment: "Arrasou na live!", profile: "https://randomuser.me/api/portraits/men/2.jpg" },
+            { name: "Ana", comment: "Estou adorando, manda um oi!", profile: "https://randomuser.me/api/portraits/women/2.jpg" },
+            { name: "Carlos", comment: "Não sabia que você fazia lives!", profile: "https://randomuser.me/api/portraits/men/3.jpg" },
+            { name: "Bea", comment: "Salve, manda um beijo!", profile: "https://randomuser.me/api/portraits/women/3.jpg" },
+            { name: "Paulo", comment: "Isso tá muito bom!", profile: "https://randomuser.me/api/portraits/men/4.jpg" },
+            { name: "Clara", comment: "Amei o conteúdo, parabéns!", profile: "https://randomuser.me/api/portraits/women/4.jpg" }
+        ];
+
+        const emojis = ["❤️", "😍", "😂", "🔥", "👏", "👍"];
+
+        function showComment() {
+            const randomComment = fakeComments[Math.floor(Math.random() * fakeComments.length)];
+            const commentElement = document.createElement('div');
+            commentElement.classList.add('comment');
+            commentElement.innerHTML = `<img src="${randomComment.profile}" alt="${randomComment.name}" /> <span><strong>${randomComment.name}:</strong> ${randomComment.comment}</span>`;
+            commentsElement.appendChild(commentElement);
+            if (commentsElement.childElementCount > 5) {
+                commentsElement.removeChild(commentsElement.firstChild);
+            }
+        }
+
+        function showEmoji() {
+            const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+            const emojiElement = document.createElement('div');
+            emojiElement.classList.add('emoji');
+            emojiElement.innerHTML = randomEmoji;
+            emojiContainer.appendChild(emojiElement);
+            setTimeout(() => {
+                emojiElement.remove();
+            }, 3000);
+        }
+
+        setInterval(showComment, 2000);
+        setInterval(showEmoji, 1500);
+    </script>
+</body>
+</html>
